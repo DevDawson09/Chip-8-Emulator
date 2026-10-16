@@ -1,6 +1,26 @@
-#include <iostream>
+#include "Chip-8.h"
+
+void setupGraphic();
+void setupInputs();
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    //setupGraphic();
+    //setupInputs();
+    
+    chip8 myChip8 {};
+    
+    // Copy the program into the memory 
+    myChip8.loadGame("2-ibm-logo.ch8");
+    
+    for (;;)
+    {
+        myChip8.emulateCycle();
+        if (myChip8.getDrawFlag()) 
+            //drawGraphics();
+        
+        // If we press or release a key, 
+        // we should store this state in the part that emulates the keypad
+        myChip8.setKeys();
+    }
 }
