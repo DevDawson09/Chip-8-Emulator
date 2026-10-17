@@ -1,24 +1,9 @@
 #include "Chip-8.h"
+#include "Helper.h"
 #include <algorithm>
 #include <fstream>
 #include <cassert>
 #include <iostream>
-#define PASS
-
-const unsigned int START_ADDRESS = 0x200;
-
-
-void clearScreen()
-{
-    PASS;
-}
-
-void draw(chip8::BYTE X, chip8::BYTE Y, chip8::BYTE N)
-{
-    //V[X], V[Y], N
-    PASS;
-}
-
 
 
 
@@ -60,6 +45,8 @@ void chip8::loadFont()
     
 }
 
+//Code is from Austin Morlan:
+//https://austinmorlan.com/posts/chip8_emulator/#loading-a-rom (ty)
 void chip8::loadGame(char const* filename)
 {
     // Open the file as a stream of binary and move the file pointer to the end
@@ -85,6 +72,11 @@ void chip8::loadGame(char const* filename)
         // Free the buffer
         delete[] buffer;
     }
+}
+
+void chip8::setKeys()
+{
+    PASS;
 }
 
 void chip8::emulateCycle()
@@ -140,9 +132,4 @@ void chip8::emulateCycle()
             printf("BEEP!\n"); // replace with actual noise
         --sound_timer;
     } 
-}
-
-void chip8::setKeys()
-{
-    PASS;
 }

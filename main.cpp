@@ -1,12 +1,10 @@
 #include "Chip-8.h"
-
-void setupGraphic();
-void setupInputs();
+#include "Helper.h"
 
 int main()
 {
-    //setupGraphic();
-    //setupInputs();
+    setupGraphic();
+    setupInputs();
     
     chip8 myChip8 {};
     

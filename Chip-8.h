@@ -4,14 +4,14 @@
 #include <array>
 #include <vector>
 
+const unsigned int START_ADDRESS = 0x200;
+
 class chip8 {
 public:
 	using BYTE = unsigned char;
 private:
 	//Only influenced by opcode 0x00E0 (clear screen) and 0xDXYN (draw a sprite)
 	bool drawFlag {};
-	
-	
 	
 	unsigned short opcode{};
 	
