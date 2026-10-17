@@ -9,7 +9,7 @@ int main()
     chip8 myChip8 {};
     
     // Copy the program into the memory 
-    myChip8.loadGame("2-ibm-logo.ch8");
+    myChip8.loadGame("../2-ibm-logo.ch8");
     
     for (;;)
     {
