@@ -4,7 +4,7 @@
 #include <array>
 #include <vector>
 
-const unsigned int START_ADDRESS = 0x200;
+constexpr unsigned int START_ADDRESS = 0x200;
 
 class chip8 {
 public:

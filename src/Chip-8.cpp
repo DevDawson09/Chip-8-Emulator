@@ -39,7 +39,7 @@ void chip8::initialize()
 void chip8::loadFont()
 {
     //Assign font to 050-09F in memory (which is before 0x200)
-    for (unsigned int i{ 0 }; i < std::ssize(font); ++i) {
+    for (unsigned int i{ 0 }; i < font.size(); ++i) {
         memory[0x050 + i] = font[i];
     }
     
@@ -116,7 +116,7 @@ void chip8::emulateCycle()
             I = (opcode & 0x0FFF);
             break;
         case 0xD000:
-            draw(BYTE (opcode >> 8) & 0x0F, BYTE (opcode >> 4) & 0x00F, BYTE (opcode & 0x000F));
+            draw( (opcode >> 8) & 0x0F,  (opcode >> 4) & 0x00F,  (opcode & 0x000F));
             break;
         default:
             break;
