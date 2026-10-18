@@ -1,10 +1,11 @@
 #include "Chip-8.h"
 #include "Helper.h"
+#include "setupFunctions.h"
 #include "SDL.h"
 
 int main(int argc, char *argv[])
 {
-    setupGraphic();
+    const Display graphics {setupGraphic()};
     setupInputs();
 
     chip8 myChip8 {};
@@ -16,10 +17,12 @@ int main(int argc, char *argv[])
     {
         myChip8.emulateCycle();
         if (myChip8.getDrawFlag())
-            //drawGraphics();
+            drawGraphics(graphics, myChip8);
 
         // If we press or release a key,
         // we should store this state in the part that emulates the keypad
         myChip8.setKeys();
     }
+
+    return 0;
 }

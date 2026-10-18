@@ -112,6 +112,14 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 
+# Ignore CLion / JetBrains project settings
+.idea/
+*.iml
+
+# Ignore the build directory (replace with your build folder name if different)
+cmake-build-debug/
+cmake-build-release/
+
 # Visual Studio profiler
 *.psess
 *.vsp

@@ -12,6 +12,9 @@ add_executable(Chip_8 WIN32
         src/Helper.cpp
         src/Helper.h
         src/main.cpp
+        src/setupFunctions.cpp
+        src/setupFunctions.h
+        src/Display.h
 )
 
 target_include_directories(Chip_8 PRIVATE

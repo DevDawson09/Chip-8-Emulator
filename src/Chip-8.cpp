@@ -4,7 +4,9 @@
 #include <fstream>
 #include <cassert>
 #include <iostream>
-
+#include <SDL.h>
+#include <SDL_events.h>
+#include <SDL_render.h>
 
 
 
@@ -76,7 +78,21 @@ void chip8::loadGame(char const* filename)
 
 void chip8::setKeys()
 {
-    PASS;
+    SDL_Event event {};
+
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+            case SDL_QUIT:
+                SDL_Quit();
+                exit(0);
+                break;
+
+            default:
+                break;
+        }
+    }
 }
 
 void chip8::emulateCycle()
@@ -94,7 +110,7 @@ void chip8::emulateCycle()
             switch (opcode & 0x00FF)
             {
                 case 0x00E0:
-                    clearScreen(); //not implemented
+                    //clearScreen(); //not implemented
                     break;
                 case 0x00EE:
                     //Left blank
