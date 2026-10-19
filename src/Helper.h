@@ -1,9 +1,8 @@
 #ifndef HELPER_H
 #define HELPER_H
 #define PASS
+#include "Chip-8.h"
 #include "Display.h"
-
-void draw(chip8::BYTE X, chip8::BYTE Y, chip8::BYTE N);
 
 void clearScreen(const Display& graphics);
 

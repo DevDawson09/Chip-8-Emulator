@@ -15,13 +15,19 @@ int main(int argc, char *argv[])
 
     for (;;)
     {
-        myChip8.emulateCycle();
-        if (myChip8.getDrawFlag())
+        myChip8.emulateCycle(graphics);
+        if (myChip8.getDrawFlag()) //likely gotta implement a Hertz rate here.
+        {
             drawGraphics(graphics, myChip8);
+            myChip8.setDrawFlag(false);
+        }
+
+
 
         // If we press or release a key,
         // we should store this state in the part that emulates the keypad
         myChip8.setKeys();
+        SDL_Delay(1);
     }
 
     return 0;

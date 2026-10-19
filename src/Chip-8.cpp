@@ -1,13 +1,12 @@
 #include "Chip-8.h"
-#include "Helper.h"
 #include <algorithm>
 #include <fstream>
 #include <cassert>
 #include <iostream>
 #include <SDL.h>
 #include <SDL_events.h>
-#include <SDL_render.h>
 
+#include "Helper.h"
 
 
 chip8::chip8()
@@ -30,7 +29,6 @@ void chip8::initialize()
     
     //Clearing out
     std::fill(std::begin(memory), std::end(memory), 0);
-    std::fill(std::begin(gfx), std::end(gfx), 0);
     std::fill(std::begin(key), std::end(key), 0);
     std::fill(std::begin(V), std::end(V), 0);
     std::fill(std::begin(stack), std::end(stack), 0);
@@ -76,6 +74,37 @@ void chip8::loadGame(char const* filename)
     }
 }
 
+
+void chip8::draw(const BYTE X, const BYTE Y, const BYTE N)
+{
+    const int xPos {V[X] % 64};
+    const int yPos {V[Y] % 32};
+
+    V[0xF] = 0;
+
+    for ( int row {0} ; row < N; ++row) {
+        if (yPos + row >= 32)
+            break;
+
+        int spriteData {memory[I + row]};
+
+        for (int column {0}; column < 8; ++column) {
+            if (xPos + column >= 64)
+                break;
+
+            const int screenIndex {(yPos + row)*64 + (xPos + column)};
+            const int spritePixel {(spriteData >> (7-column)) & 1};
+
+            if (spritePixel == 1 && gfx[screenIndex] == 1)
+                V[0xF] = 1;
+
+            gfx[screenIndex] ^= ((spriteData >> column) & 1);
+        }
+    }
+
+    setDrawFlag(true);
+}
+
 void chip8::setKeys()
 {
     SDL_Event event {};
@@ -85,7 +114,6 @@ void chip8::setKeys()
         switch (event.type)
         {
             case SDL_QUIT:
-                SDL_Quit();
                 exit(0);
                 break;
 
@@ -95,8 +123,9 @@ void chip8::setKeys()
     }
 }
 
-void chip8::emulateCycle()
+void chip8::emulateCycle(const Display& graphics)
 {
+
     //Fetch Opcode
     unsigned short res {memory[pc]};
     res <<= 8;
@@ -110,11 +139,7 @@ void chip8::emulateCycle()
             switch (opcode & 0x00FF)
             {
                 case 0x00E0:
-                    //clearScreen(); //not implemented
-                    break;
-                case 0x00EE:
-                    //Left blank
-                    break;
+                    clearScreen(graphics);
                 default: 
                     break;
             }

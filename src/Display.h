@@ -5,6 +5,7 @@
 struct Display {
     SDL_Window* window {nullptr};
     SDL_Renderer* renderer {nullptr};
+    SDL_Texture* texture {nullptr};
 };
 
 #endif //CHIP_8_DISPLAY_H

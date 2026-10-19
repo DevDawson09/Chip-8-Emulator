@@ -4,6 +4,8 @@
 #include <array>
 #include <vector>
 
+#include "Display.h"
+
 constexpr unsigned int START_ADDRESS = 0x200;
 
 class chip8 {
@@ -35,7 +37,7 @@ private:
 	
 	std::array<BYTE, 16> key{};
 	
-	std::array<BYTE, 2048> gfx{};
+	std::array<BYTE, 64 * 32> gfx{};
 	
 
 	
@@ -61,12 +63,15 @@ public:
 	chip8();
 	
 	bool getDrawFlag() const {return drawFlag;}
+	void setDrawFlag( const bool state = false) {drawFlag = state;}
+	std::array<BYTE, 64*32> getGFX() const {return gfx;}
 	
 	void initialize();
 	void loadFont();
 	void loadGame(char const* file);
-	void emulateCycle();
-	void setKeys();
+	void emulateCycle(const Display& graphics); //Still gotta implement ocpodes
+	void setKeys(); //Not Working
+	void draw(BYTE X, BYTE Y, BYTE N);
 
 };
 
