@@ -1,13 +1,21 @@
 # Chip-8
 
-Okay so for the current patch of this 
-Emulator (will improve UX later), all you can do is 
-clone the repository and run main.cpp.
+CHIP-8 Emulator — Windows x64
 
-The current patch is only capable of displaying images and handles
-no inputs thus far. To change whatever image you'd like to display, simply:
-1. Download your .ch8 rom file
-2. Move it into the /Tests directory
-3. Go into main and change the name of the file being loaded
-4. That's it!
+REQUIREMENTS
+- Windows 64-bit
+- Required runtime dependencies included with the release
+- A compatible CHIP-8 ROM
 
+HOW TO RUN
+1. Extract the downloaded ZIP file.
+2. Open a terminal in the extracted folder.
+3. Run the emulator with a ROM file:
+
+   .\Chip_8.exe "C:\path\to\your-rom.ch8"
+
+Replace the example path with the location of your ROM.
+
+NOTE
+You must supply a ROM that you are permitted to use.
+This emulator does not include commercial game ROMs.
