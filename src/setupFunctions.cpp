@@ -10,8 +10,9 @@ Display setupGraphic()
     constexpr int screenHeight {512};
 
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_CreateWindow("Chip-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
-    SDL_CreateRenderer(graphics.window, -1, 0);
+    graphics.window = SDL_CreateWindow("Chip-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+
+    graphics.renderer = SDL_CreateRenderer(graphics.window, -1, 0);
     SDL_RenderSetLogicalSize(graphics.renderer, 64, 32); //Chip-8 emulator resolution
 
     graphics.texture = SDL_CreateTexture(graphics.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 64, 32);

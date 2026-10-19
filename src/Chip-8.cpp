@@ -11,9 +11,8 @@
 
 chip8::chip8()
 {
-    pc = 0x200;
     stack.resize(16);
-    loadFont();
+    initialize();
 }
 
 void chip8::initialize()
@@ -31,6 +30,7 @@ void chip8::initialize()
     std::fill(std::begin(memory), std::end(memory), 0);
     std::fill(std::begin(key), std::end(key), 0);
     std::fill(std::begin(V), std::end(V), 0);
+    std::fill(std::begin(gfx), std::end(gfx), 0);
     std::fill(std::begin(stack), std::end(stack), 0);
     
     loadFont();
@@ -71,6 +71,8 @@ void chip8::loadGame(char const* filename)
 
         // Free the buffer
         delete[] buffer;
+    } else {
+        std::cerr << "couldn't open ROM" << '\n';
     }
 }
 
@@ -98,7 +100,7 @@ void chip8::draw(const BYTE X, const BYTE Y, const BYTE N)
             if (spritePixel == 1 && gfx[screenIndex] == 1)
                 V[0xF] = 1;
 
-            gfx[screenIndex] ^= ((spriteData >> column) & 1);
+            gfx[screenIndex] ^= spritePixel;
         }
     }
 
@@ -139,6 +141,7 @@ void chip8::emulateCycle(const Display& graphics)
             switch (opcode & 0x00FF)
             {
                 case 0x00E0:
+                    std::fill(std::begin(gfx), std::end(gfx), 0);
                     clearScreen(graphics);
                 default: 
                     break;
