@@ -2,16 +2,22 @@
 #include "Helper.h"
 #include "setupFunctions.h"
 #include "SDL.h"
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
     const Display graphics {setupGraphic()};
-    setupInputs();
 
     chip8 myChip8 {};
 
-    // Copy the program into the memory
-    myChip8.loadGame("../Tests/2-ibm-logo.ch8");
+    //Uncomment when building release
+    // if (argc < 2) {
+    //     std::cerr << "Incorrect Usage, Use: Chip_8.exe <rom_file>" << '\n';
+    //     return 1;
+    // }
+
+    //User must directly insert the file path for the rom file they wish to run
+    myChip8.loadGame("../Tests/3-corax+.ch8"); //Change to argv[1] for release build
 
     for (;;)
     {
@@ -27,7 +33,6 @@ int main(int argc, char *argv[])
         // If we press or release a key,
         // we should store this state in the part that emulates the keypad
         myChip8.setKeys();
-        SDL_Delay(1);
     }
 
     return 0;

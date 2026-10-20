@@ -1,4 +1,6 @@
 #include "Helper.h"
+
+#include <SDL_events.h>
 #include <SDL_render.h>
 
 #include "Chip-8.h"
@@ -22,13 +24,14 @@ void drawGraphics(const Display& graphics, const chip8& emulator) {
         pixels[i] = (emulator.getGFX()[i] == 1) ? 0xFFFFFFFF : 0x000000FF;
     }
 
-    SDL_UpdateTexture(graphics.texture, NULL, pixels, 64 * sizeof(uint32_t) );
+    SDL_UpdateTexture(graphics.texture, nullptr, pixels, 64 * sizeof(uint32_t) );
 
     //clear renderer
     SDL_RenderClear(graphics.renderer);
 
     //Send texture to renderer
     SDL_RenderCopy(graphics.renderer, graphics.texture, nullptr, nullptr);
-    
+
     SDL_RenderPresent(graphics.renderer);
 }
+

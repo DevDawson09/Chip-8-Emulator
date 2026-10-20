@@ -27,7 +27,3 @@ Display setupGraphic()
 
 }
 
-void setupInputs()
-{
-    PASS;
-}

@@ -11,7 +11,6 @@
 
 chip8::chip8()
 {
-    stack.resize(16);
     initialize();
 }
 
@@ -28,7 +27,7 @@ void chip8::initialize()
     
     //Clearing out
     std::fill(std::begin(memory), std::end(memory), 0);
-    std::fill(std::begin(key), std::end(key), 0);
+    std::fill(std::begin(keys), std::end(keys), 0);
     std::fill(std::begin(V), std::end(V), 0);
     std::fill(std::begin(gfx), std::end(gfx), 0);
     std::fill(std::begin(stack), std::end(stack), 0);
@@ -115,6 +114,118 @@ void chip8::setKeys()
     {
         switch (event.type)
         {
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_1:
+                        keys[0x1] = 1;
+                        break;
+                    case SDLK_2:
+                        keys[0x2] =1;
+                        break;
+                    case SDLK_3:
+                        keys[0x3] = 1;
+                        break;
+                    case SDLK_4:
+                        keys[0xC] = 1;
+                        break;
+                    case SDLK_q:
+                        keys[0x4] = 1;
+                        break;
+                    case SDLK_w:
+                        keys[0x5] = 1;
+                        break;
+                    case SDLK_e:
+                        keys[0x6] = 1;
+                        break;
+                    case SDLK_r:
+                        keys[0xD] = 1;
+                        break;
+                    case SDLK_a:
+                        keys[0x7] = 1;
+                        break;
+                    case SDLK_s:
+                        keys[0x8] = 1;
+                        break;
+                    case SDLK_d:
+                        keys[0x9] = 1;
+                        break;
+                    case SDLK_f:
+                        keys[0xE] = 1;
+                        break;
+                    case SDLK_z:
+                        keys[0xA] = 1;
+                        break;
+                    case SDLK_x:
+                        keys[0x0] = 1;
+                        break;
+                    case SDLK_c:
+                        keys[0xB] = 1;
+                        break;
+                    case SDLK_v:
+                        keys[0xF] = 1;
+                        break;
+                    default:
+                        std::cerr << "No input" << '\n';
+                        break;
+
+                }
+                break;
+            case SDL_KEYUP:
+                switch (event.key.keysym.sym) {
+                    case SDLK_1:
+                        keys[0x1] = 0;
+                        break;
+                    case SDLK_2:
+                        keys[0x2] =0;
+                        break;
+                    case SDLK_3:
+                        keys[0x3] = 0;
+                        break;
+                    case SDLK_4:
+                        keys[0xC] = 0;
+                        break;
+                    case SDLK_q:
+                        keys[0x4] = 0;
+                        break;
+                    case SDLK_w:
+                        keys[0x5] = 0;
+                        break;
+                    case SDLK_e:
+                        keys[0x6] = 0;
+                        break;
+                    case SDLK_r:
+                        keys[0xD] = 0;
+                        break;
+                    case SDLK_a:
+                        keys[0x7] = 0;
+                        break;
+                    case SDLK_s:
+                        keys[0x8] = 0;
+                        break;
+                    case SDLK_d:
+                        keys[0x9] = 0;
+                        break;
+                    case SDLK_f:
+                        keys[0xE] = 0;
+                        break;
+                    case SDLK_z:
+                        keys[0xA] = 0;
+                        break;
+                    case SDLK_x:
+                        keys[0x0] = 0;
+                        break;
+                    case SDLK_c:
+                        keys[0xB] = 0;
+                        break;
+                    case SDLK_v:
+                        keys[0xF] = 0;
+                        break;
+                    default:
+                        std::cerr << "No input" << '\n';
+                        break;
+
+                }
+                break;
             case SDL_QUIT:
                 exit(0);
                 break;
@@ -134,6 +245,8 @@ void chip8::emulateCycle(const Display& graphics)
     opcode = res | memory[pc + 1];
     pc += 2;
     
+    const int VX {(opcode >> 8) & 0x0F};
+    const int VY {(opcode >> 4) & 0x00F};
     //Decode Opcode
     switch (opcode & 0xF000)
     {
@@ -143,37 +256,195 @@ void chip8::emulateCycle(const Display& graphics)
                 case 0x00E0:
                     std::fill(std::begin(gfx), std::end(gfx), 0);
                     clearScreen(graphics);
-                default: 
+                    break;
+                case 0x00EE:
+                    if (sp != 0)
+                        pc = stack[--sp];
+                    break;
+                default:
                     break;
             }
             break;
         case 0x1000:
             pc = (opcode & 0x0FFF);
             break;
+        case 0x2000:
+            stack[sp++] = pc;
+            pc = (opcode & 0x0FFF);
+            break;
+        case 0x3000:
+            if (V[VX] == (opcode & 0x00FF))
+                pc += 2;
+            break;
+        case 0x4000:
+            if (V[VX] != (opcode & 0x00FF))
+                pc += 2;
+            break;
+        case 0x5000:
+            if ((V[VX]) == (V[VY]))
+                pc += 2;
+            break;
+        case 0x9000:
+            if ((V[(opcode >> 8)  & 0x0F]) != (V[VY] ))
+                pc += 2;
+            break;
         case 0x6000:
-            V[(opcode >> 8) & 0x0F] = (opcode & 0x00FF);
+            V[VX] = (opcode & 0x00FF);
             break;
         case 0x7000:
-            V[(opcode >> 8) & 0x0F] += (opcode & 0x00FF);
+            V[VX] += (opcode & 0x00FF);
+            break;
+        case 0x8000:
+            switch (opcode & 0x000F) {
+                case 0x0000:
+                    V[VX] = V[VY];
+                    break;
+                case 0x0001:
+                    V[VX] |= V[VY];
+                    break;
+                case 0x0002:
+                    V[VX] &= V[VY];
+                    break;
+                case 0x0003:
+                    V[VX] ^= V[VY];
+                    break;
+                case 0x0004:
+                    V[VX] += V[VY];
+                    break;
+                case 0x0005:
+                    if (V[VY] >= V[VX])
+                        V[0xF] = 1;
+                    else
+                        V[0xF] = 0;
+                    V[VX] -= V[VY];
+                    break;
+                case 0x0007:
+                    if (V[VY] >= V[VX])
+                        V[0xF] = 1;
+                    else
+                        V[0xF] = 0;
+                    V[VX] = V[VY] - V[VX];
+                    break;
+                case 0x0006:
+                    if ((V[VX] & 1) == 1)
+                        V[0xF] = 1;
+                    else
+                        V[0xF] = 0;
+                    V[VX] >>= 1;
+                    break;
+                case 0x000E:
+                    if ((V[VX] & 1) == 1)
+                        V[0xF] = 1;
+                    else
+                        V[0xF] = 0;
+                    V[VX] <<= 1;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 0xB000:
+            pc = 0x0FFF + V[0x0];
             break;
         case 0xA000:
             I = (opcode & 0x0FFF);
             break;
-        case 0xD000:
-            draw( (opcode >> 8) & 0x0F,  (opcode >> 4) & 0x00F,  (opcode & 0x000F));
+        case 0xC000:
+            //Not implemented yet (random byte required)
             break;
+        case 0xD000:
+            draw( VX,  VY,  (opcode & 0x000F));
+            break;
+        case 0xE000:
+            switch (opcode & 0x000F) {
+                case 0x000E:
+                    if (keys[V[(VX)]] == 1)
+                        pc += 2;
+                    break;
+                case 0x0001:
+                    if (keys[V[(VX)]] != 1)
+                        pc += 2;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 0xF000:
+            switch (opcode & 0x000F) {
+                case 0x0007:
+                    V[(VX)] = delay_timer;
+                    break;
+                case 0x0008:
+                    sound_timer = V[(VX)];
+                    break;
+                case 0x000E:
+                    I += V[(VX)];
+                    break;
+                case 0x000A: {
+                    bool found {false};
+                    updateTimers();
+                    for (int i {0}; i < 16; ++i) {
+                        if (keys[i] == 1) {
+                            V[VX] = i;
+                            pc += 2;
+                            found = true;
+                        }
+                    }
+                    setKeys();
+                    if (found != true)
+                        pc -= 2;
+                    break;
+                }
+                case 0x0009:
+                    I = 0x050 + (V[VX] * 5);
+                    break;
+                case 0x0003: {
+                    const int number {V[VX]};
+                    memory[I + 2] = number % 10;
+                    memory[I + 1] =(number % 100) / 10;
+                    memory[I] = number / 100;
+                    break;
+                }
+                case 0x0005:
+                    switch ((opcode >> 4) & 0x00F) {
+                        case 0x005:
+                            for (int i {0}; i <= VX; ++i) {
+                                memory[I + i] = V[i];
+                            }
+                            break;
+                        case 0x001:
+                            delay_timer = V[(VX)];
+                            break;
+                        case 0x006:
+                            for (int i {0}; i <= VX; ++i) {
+                                V[i] = memory[I+i];
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            break;
+
         default:
             break;
     }
     
+    updateTimers();
+}
+
+void chip8::updateTimers() {
     //Update timers
     if(delay_timer > 0)
         --delay_timer;
- 
+
     if(sound_timer > 0)
     {
         if(sound_timer == 1)
             printf("BEEP!\n"); // replace with actual noise
         --sound_timer;
-    } 
+    }
 }

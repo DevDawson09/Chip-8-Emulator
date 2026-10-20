@@ -4,6 +4,4 @@
 
 Display setupGraphic();
 
-void setupInputs();
-
 #endif //CHIP_8_SETUPFUNCTIONS_H

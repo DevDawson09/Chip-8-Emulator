@@ -29,13 +29,13 @@ private:
 	
 	//used to remember the current location before a jump to a subroutine
 	//is performed, always store pc in here before jumping
-	std::vector<unsigned short> stack {};
+	std::array<uint16_t, 16> stack {};
 	
 	std::array<BYTE, 4096> memory{};
 	
 	std::array<BYTE, 16> V{};
 	
-	std::array<BYTE, 16> key{};
+	std::array<BYTE, 16> keys{};
 	
 	std::array<BYTE, 64 * 32> gfx{};
 	
@@ -72,6 +72,7 @@ public:
 	void emulateCycle(const Display& graphics); //Still gotta implement ocpodes
 	void setKeys(); //Not Working
 	void draw(BYTE X, BYTE Y, BYTE N);
+	void updateTimers();
 
 };
 
