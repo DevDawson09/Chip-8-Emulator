@@ -308,37 +308,54 @@ void chip8::emulateCycle(const Display& graphics)
                 case 0x0003:
                     V[VX] ^= V[VY];
                     break;
-                case 0x0004:
+                case 0x0004: {
+                    BYTE flag {};
+                    if ((V[VX] + V[VY]) >= 255)
+                        flag = 1;
+                    else
+                        flag = 0;
+
                     V[VX] += V[VY];
+                    V[0xF] = flag;
                     break;
-                case 0x0005:
-                    if (V[VY] >= V[VX])
-                        V[0xF] = 1;
-                    else
-                        V[0xF] = 0;
-                    V[VX] -= V[VY];
+                }
+                case 0x0005: {
+                    const BYTE yValue {V[VY]};
+                    const BYTE xValue {V[VX]};
+
+                    const int result { xValue - yValue};
+                    const int flag { (xValue >= yValue) ? 1 : 0 };
+                    V[VX] = result;
+                    V[0xF] = flag;
                     break;
+                }
                 case 0x0007:
+                    V[VX] = V[VY] - V[VX];
                     if (V[VY] >= V[VX])
                         V[0xF] = 1;
                     else
                         V[0xF] = 0;
-                    V[VX] = V[VY] - V[VX];
                     break;
-                case 0x0006:
+                case 0x0006: {
+                    BYTE flag {};
                     if ((V[VX] & 1) == 1)
-                        V[0xF] = 1;
+                        flag = 1;
                     else
-                        V[0xF] = 0;
+                        flag = 0;
                     V[VX] >>= 1;
+                    V[0xF] = flag;
                     break;
-                case 0x000E:
-                    if ((V[VX] & 1) == 1)
-                        V[0xF] = 1;
+                }
+                case 0x000E: {
+                    BYTE flag {};
+                    if ((V[VX] & 0x80) == 0x80)
+                        flag = 1;
                     else
-                        V[0xF] = 0;
+                        flag = 0;
                     V[VX] <<= 1;
+                    V[0xF] = flag;
                     break;
+                }
                 default:
                     break;
             }

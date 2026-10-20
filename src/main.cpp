@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     // }
 
     //User must directly insert the file path for the rom file they wish to run
-    myChip8.loadGame("../Tests/3-corax+.ch8"); //Change to argv[1] for release build
+    myChip8.loadGame("../Tests/4-flags.ch8"); //Change to argv[1] for release build
 
     for (;;)
     {
