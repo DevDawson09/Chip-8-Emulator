@@ -20,10 +20,10 @@ Replace the example path with the location of your ROM.
 Due to the 16 key keymap of the chip-8 emulator, the following keys
 represent the corresponding chip-8 keys.
 
-[ 1 2 3 4 ],      [ 1 2 3 C ]
-[ q w e r ],   => [ 4 5 6 D ]
-[ a s d f ],      [ 7 8 9 E ]
-[ z x c v ],      [ A 0 B F ]
+ 1 2 3 4       1 2 3 C 
+ q w e r   =>  4 5 6 D 
+ a s d f       7 8 9 E 
+ z x c v       A 0 B F 
 
 NOTE
 You must supply a ROM that you are permitted to use.
