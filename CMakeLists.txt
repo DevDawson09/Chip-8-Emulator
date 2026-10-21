@@ -15,6 +15,8 @@ add_executable(Chip_8 WIN32
         src/setupFunctions.cpp
         src/setupFunctions.h
         src/Display.h
+        src/audioManagement.cpp
+        src/audioManagement.h
 )
 
 target_include_directories(Chip_8 PRIVATE

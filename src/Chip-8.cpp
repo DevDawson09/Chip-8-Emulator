@@ -2,12 +2,14 @@
 #include <algorithm>
 #include <fstream>
 #include <cassert>
+#include <chrono>
 #include <iostream>
+#include <numeric>
 #include <SDL.h>
 #include <SDL_events.h>
-
+#include <random>
 #include "Helper.h"
-
+#include "audioManagement.h"
 
 chip8::chip8()
 {
@@ -86,7 +88,6 @@ void chip8::draw(const BYTE X, const BYTE Y, const BYTE N)
     for ( int row {0} ; row < N; ++row) {
         if (yPos + row >= 32)
             break;
-
         int spriteData {memory[I + row]};
 
         for (int column {0}; column < 8; ++column) {
@@ -99,11 +100,14 @@ void chip8::draw(const BYTE X, const BYTE Y, const BYTE N)
             if (spritePixel == 1 && gfx[screenIndex] == 1)
                 V[0xF] = 1;
 
+
             gfx[screenIndex] ^= spritePixel;
+
         }
     }
-
     setDrawFlag(true);
+
+
 }
 
 void chip8::setKeys()
@@ -301,16 +305,19 @@ void chip8::emulateCycle(const Display& graphics)
                     break;
                 case 0x0001:
                     V[VX] |= V[VY];
+                    V[0xF] = 0;
                     break;
                 case 0x0002:
                     V[VX] &= V[VY];
+                    V[0xF] =0;
                     break;
                 case 0x0003:
                     V[VX] ^= V[VY];
+                    V[0xF] = 0;
                     break;
                 case 0x0004: {
                     BYTE flag {};
-                    if ((V[VX] + V[VY]) >= 255)
+                    if ((V[VX] + V[VY]) > 255)
                         flag = 1;
                     else
                         flag = 0;
@@ -329,19 +336,20 @@ void chip8::emulateCycle(const Display& graphics)
                     V[0xF] = flag;
                     break;
                 }
-                case 0x0007:
-                    V[VX] = V[VY] - V[VX];
-                    if (V[VY] >= V[VX])
-                        V[0xF] = 1;
-                    else
-                        V[0xF] = 0;
+                case 0x0007: {
+                    const int result {V[VY] - V[VX]};
+                    const int flag {(V[VY] >= V[VX]) ? 1 : 0};
+                    V[VX] = result;
+                    V[0xF] = flag;
                     break;
+                }
                 case 0x0006: {
                     BYTE flag {};
                     if ((V[VX] & 1) == 1)
                         flag = 1;
                     else
                         flag = 0;
+                    V[VX] = V[VY];
                     V[VX] >>= 1;
                     V[0xF] = flag;
                     break;
@@ -352,6 +360,7 @@ void chip8::emulateCycle(const Display& graphics)
                         flag = 1;
                     else
                         flag = 0;
+                    V[VX] = V[VY];
                     V[VX] <<= 1;
                     V[0xF] = flag;
                     break;
@@ -361,17 +370,24 @@ void chip8::emulateCycle(const Display& graphics)
             }
             break;
         case 0xB000:
-            pc = 0x0FFF + V[0x0];
+            pc = (opcode & 0x0FFF) + V[0x0];
             break;
         case 0xA000:
             I = (opcode & 0x0FFF);
             break;
-        case 0xC000:
-            //Not implemented yet (random byte required)
+        case 0xC000: {
+            static std::random_device rd {};
+            static std::mt19937 gen(rd());
+            static std::uniform_int_distribution<int> distrib(0, 255);
+            int randomNum {distrib(gen)};
+            randomNum &= (opcode & 0x00FF);
+            V[VX] = randomNum;
             break;
-        case 0xD000:
+        }
+        case 0xD000: {
             draw( VX,  VY,  (opcode & 0x000F));
             break;
+        }
         case 0xE000:
             switch (opcode & 0x000F) {
                 case 0x000E:
@@ -393,23 +409,35 @@ void chip8::emulateCycle(const Display& graphics)
                     break;
                 case 0x0008:
                     sound_timer = V[(VX)];
+                    if (sound_timer > 0)
+                        playAudio();
+                    else
+                        pauseAudio();
                     break;
                 case 0x000E:
                     I += V[(VX)];
                     break;
                 case 0x000A: {
                     bool found {false};
-                    updateTimers();
-                    for (int i {0}; i < 16; ++i) {
-                        if (keys[i] == 1) {
-                            V[VX] = i;
-                            pc += 2;
-                            found = true;
+                    pc -= 2;
+                    while (!found) {
+                        updateTimers();
+                        setKeys();
+                        for (int i {0}; i < 16; ++i) {
+                            if (keys[i] == 1) {
+                                bool notReleased {true};
+                                //stall loop, wait till release to proceed
+                                while (notReleased) {
+                                    if (keys[i] == 0)
+                                        notReleased = false;
+                                    setKeys();
+                                }
+                                V[VX] = i;
+                                pc += 2;
+                                found = true;
+                            }
                         }
                     }
-                    setKeys();
-                    if (found != true)
-                        pc -= 2;
                     break;
                 }
                 case 0x0009:
@@ -428,6 +456,7 @@ void chip8::emulateCycle(const Display& graphics)
                             for (int i {0}; i <= VX; ++i) {
                                 memory[I + i] = V[i];
                             }
+                            I += VX + 1;
                             break;
                         case 0x001:
                             delay_timer = V[(VX)];
@@ -436,6 +465,7 @@ void chip8::emulateCycle(const Display& graphics)
                             for (int i {0}; i <= VX; ++i) {
                                 V[i] = memory[I+i];
                             }
+                            I += VX + 1;
                             break;
                         default:
                             break;
@@ -453,15 +483,32 @@ void chip8::emulateCycle(const Display& graphics)
     updateTimers();
 }
 
-void chip8::updateTimers() {
-    //Update timers
-    if(delay_timer > 0)
-        --delay_timer;
+void chip8::updateTimers()
+{
 
-    if(sound_timer > 0)
+    static auto lastTime {Clock::now()};
+    static Seconds accumulator{0.0};
+
+    const auto currentTime  {Clock::now()};
+
+    accumulator += currentTime - lastTime;
+    lastTime = currentTime;
+
+    constexpr Seconds timerInterval{1.0 / 60.0};
+
+    while (accumulator >= timerInterval)
     {
-        if(sound_timer == 1)
-            printf("BEEP!\n"); // replace with actual noise
-        --sound_timer;
+        accumulator -= timerInterval;
+
+        if (delay_timer > 0)
+            --delay_timer;
+
+        if (sound_timer > 0)
+        {
+            --sound_timer;
+
+            if (sound_timer == 0)
+                pauseAudio();
+        }
     }
 }
