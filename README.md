@@ -16,6 +16,10 @@ CHIP-8 Emulator — Windows x64
 
 Replace the example path with the location of your ROM.
 
+NOTE
+You must supply a ROM that you are permitted to use.
+This emulator does not include commercial game ROMs.
+
 **KEYMAP**
 Due to the 16 key keymap of the chip-8 emulator, the following keys
 represent the corresponding chip-8 keys.
@@ -26,6 +30,4 @@ q w e r   =>    4 5 6 D
 a s d f         7 8 9 E
 z x c v         A 0 B F
 
-NOTE
-You must supply a ROM that you are permitted to use.
-This emulator does not include commercial game ROMs.
+
