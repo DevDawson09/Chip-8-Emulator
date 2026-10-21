@@ -37,7 +37,7 @@ Loaded Version:
 2. Extract .zip file
 3. run Chip_8.exe (will automatically run whatever rom is pre-loaded into that version)
 
-Note: If you wish to change the ROM access the rom.txt file and change the name of the .ch8 file. If you want to use your own ROM, remember to include it in the ./ROMS directory as well.
+Note: If you wish to change the ROM access the config.txt file and change the name of the .ch8 file. If you want to use your own ROM, remember to include it in the ./ROMS directory as well.
 
 Loaded version: [here](https://github.com/DevDawson09/Chip-8-Emulator/releases/download/v1.1.0/Chip-8-Windows-x64.Loaded.zip)
 
