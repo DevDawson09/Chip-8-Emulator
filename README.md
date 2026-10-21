@@ -98,4 +98,6 @@ http://www.codeslinger.co.uk/pages/projects/chip8.html
 https://wiki.libsdl.org/SDL2/CategoryAudio
 https://en.wikipedia.org/wiki/CHIP-8
 https://laurencescotford.net/2020/07/19/chip-8-on-the-cosmac-vip-drawing-sprites/
+https://github.com/kripod/chip8-roms/tree/master
+https://github.com/Timendus/chip8-test-suite
 
